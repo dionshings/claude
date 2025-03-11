@@ -1,0 +1,30 @@
+---
+- name: Install Maven on VSC
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Java (required for Maven)
+      package:
+        name: openjdk-11-jdk
+        state: present
+
+    - name: Install Maven (Debian-based systems)
+      apt:
+        name: maven
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install Maven (RHEL-based systems)
+      yum:
+        name: maven
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Verify Maven Installation
+      command: mvn -version
+      register: maven_version
+
+    - name: Display Maven Version
+      debug:
+        msg: "{{ maven_version.stdout }}"
